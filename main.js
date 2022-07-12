@@ -1,6 +1,8 @@
 import { Isometric } from "./isometric.js";
-import { Pos } from "./position.js";
 import { DebugOptions } from "./debugOptions.js";
+import { Cartesian } from "./cartesian.js";
+import { Pos } from "./position.js";
+import { Map } from "./map.js";
 class Tile {
   constructor(img, imgX, imgY, imgW, imgH) {
     var tile = this;
@@ -15,9 +17,11 @@ class Tile {
 }
 
 var canvas = document.getElementById("canvas");
+var ctx = canvas.getContext("2d");
+var cartCanvas = document.getElementById("cartesian");
+var cartCtx = cartCanvas.getContext("2d");
 var runCanvas = true;
 const halfScreen = new Pos(canvas.width / 2, canvas.height / 2);
-var ctx = canvas.getContext("2d");
 //Debug info
 let infoArr = ["Debug =D"];
 let tileTypes = [];
@@ -29,6 +33,7 @@ var gridFirstTile = 0;
 var gridLastTile = 21;
 //Mouse
 const mouse = new Pos(halfScreen.x, halfScreen.y);
+
 // isometric:
 const isometric = new Isometric(mouse);
 function IsoToScreenX(localX, localY) {
@@ -43,7 +48,11 @@ function ScreenToIsoX(globalX, globalY) {
 function ScreenToIsoY(globalX, globalY) {
   return isometric.ScreenToIsoY(globalX, globalY);
 }
+
+const map = new Map(gridLastTile);
 const debugGrid = new DebugOptions(ctx, isometric);
+//Cart
+const cartesian = new Cartesian(selectedTile, isometric, cartCtx, map);
 
 function update() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
@@ -53,6 +62,7 @@ function update() {
   updateCamera(canvas);
   updateInfo();
   printInfo();
+  cartesian.printMap(selectedTile.x, selectedTile.y);
   if (runCanvas){
     requestAnimationFrame(update);
   }
