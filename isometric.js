@@ -23,11 +23,11 @@ export class Isometric {
             this.camera.x += step;
         }
         //Up
-        if (this.mouse.y < canvas.height / 4){
+        if (this.mouse.y < canvas.height / 5){
             this.camera.y += step;
         }
         //Down
-        if (this.mouse.y > canvas.height - (canvas.height / 4)){
+        if (this.mouse.y > canvas.height - (canvas.height / 5)){
             this.camera.y -= step;
         }
 

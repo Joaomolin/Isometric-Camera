@@ -3,21 +3,38 @@ export class DebugOptions {
     this.ctx = ctx;
     this.iso = isometric;
 
-    this.printCoordinates = true;
+    this.printCoordinates = false;
+    this.printCameraBorder = false;
   }
 
 
-  printDebugGrid(rx, ry, gridFirstTile, gridLastTile, floorX, floorY) {
+  printDebugGrid(rx, ry, gridFirstTile, gridLastTile, floorX, floorY, canvas) {
     this.printGridLines(gridFirstTile, gridLastTile);
-    if (this.printCoordinates || this.printDebug){
+    if (this.printCoordinates){
         this.printGridCoordinates(gridFirstTile, gridLastTile);
     }
+
     this.printXAxisDividedLine(rx, ry, gridFirstTile, gridLastTile, floorX, floorY);
     this.printYAxisDividedLine(rx, ry, gridFirstTile, gridLastTile, floorX, floorY);
 
     // this.printYAxisLine(rx, ry, gridFirstTile, gridLastTile);
     // this.printXAxisLine(rx, ry, gridFirstTile, gridLastTile);
+
+    if (this.printCameraBorder){
+      this.printBorder(canvas);
+    }
+    
   }
+  printBorder(canvas){
+      this.ctx.fillStyle = "111";
+      this.ctx.globalAlpha = 0.2;
+      this.ctx.fillRect(0, 0, canvas.width / 8, canvas.height);
+      this.ctx.fillRect(canvas.width - (canvas.width / 8), 0, canvas.width / 8, canvas.height);
+      this.ctx.fillRect(0, 0, canvas.width, canvas.height / 5);
+      this.ctx.fillRect(0, canvas.height - (canvas.height / 5), canvas.width, canvas.height / 5);
+      this.ctx.globalAlpha = 1;
+  }
+
 
   strokeSelectedTile(floorX, floorY){
     // console.log(`Printing selected ${floorX}, ${floorY}`);
@@ -67,7 +84,6 @@ export class DebugOptions {
   printGridCoordinates(gridFirstTile, gridLastTile) {
     this.ctx.font = "10px sans-serif";
     this.ctx.textAlign = "center";
-    this.ctx.textBaseline = "middle";
     for (var x = gridFirstTile; x < gridLastTile; x++) {
       for (var y = gridFirstTile; y < gridLastTile; y++) {
         this.ctx.fillText(

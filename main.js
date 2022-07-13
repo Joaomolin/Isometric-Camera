@@ -22,6 +22,7 @@ var cartCanvas = document.getElementById("cartesian");
 var cartCtx = cartCanvas.getContext("2d");
 var runCanvas = true;
 const halfScreen = new Pos(canvas.width / 2, canvas.height / 2);
+let shouldPrintInfo = true;
 //Debug info
 let infoArr = ["Debug =D"];
 let tileTypes = [];
@@ -30,7 +31,7 @@ var interval = null;
 //Grid tiles
 const selectedTile = new Pos();
 var gridFirstTile = 0;
-var gridLastTile = 21;
+var gridLastTile = 6;
 //Mouse
 const mouse = new Pos(halfScreen.x, halfScreen.y);
 
@@ -54,7 +55,7 @@ const debugGrid = new DebugOptions(ctx, isometric);
 //Cart
 const cartesian = new Cartesian(selectedTile, isometric, cartCtx, map);
 
-function update() {
+function runFrame() {
   ctx.clearRect(0, 0, canvas.width, canvas.height);
 
   onUpdate();
@@ -64,7 +65,7 @@ function update() {
   printInfo();
   cartesian.printMap(selectedTile.x, selectedTile.y);
   if (runCanvas){
-    requestAnimationFrame(update);
+    requestAnimationFrame(runFrame);
   }
 }
 canvas.onmousemove = function (e) {
@@ -121,7 +122,7 @@ function updateCamera(canvas) {
 canvas.addEventListener('mousemove', function (e) {
   if (!runCanvas){
     runCanvas = true;
-    update()
+    runFrame();
   }
 });
 
@@ -139,12 +140,39 @@ function onUpdate() {
   selectedTile.y = floorY;
 
 
-  debugGrid.printDebugGrid(rx, ry, gridFirstTile, gridLastTile, floorX, floorY);
+  debugGrid.printDebugGrid(rx, ry, gridFirstTile, gridLastTile, floorX, floorY, canvas);
   //Selected tile
   debugGrid.strokeSelectedTile(floorX, floorY);
   
 
 }
+
+var tileCoordBtn = document.getElementById("showDebugInfoBtn");
+tileCoordBtn.addEventListener('click', function (e) {
+  shouldPrintInfo = !shouldPrintInfo;
+  runFrame();
+});
+
+var tileCoordBtn = document.getElementById("showCartesianBtn");
+tileCoordBtn.addEventListener('click', function (e) {
+  cartCanvas.style.display= cartCanvas.style.display === 'none' ? 'initial' : 'none';
+
+  runFrame();
+});
+
+var cameraBorderBtn = document.getElementById("showCameraBorder");
+cameraBorderBtn.addEventListener('click', function (e) {
+  debugGrid.printCameraBorder = !debugGrid.printCameraBorder;
+  runFrame();
+});
+
+var tileCoordBtn = document.getElementById("showTileCoord");
+tileCoordBtn.addEventListener('click', function (e) {
+  debugGrid.printCoordinates = !debugGrid.printCoordinates;
+  runFrame();
+});
+
+
 
 function updateInfo(){
   infoArr.length = 0;
@@ -154,6 +182,7 @@ function updateInfo(){
 }
 
 function printInfo() {
+  if (!shouldPrintInfo) return;
   ctx.font = "15px sans-serif";
   ctx.textAlign = "left";
   ctx.fillStyle = "white";
@@ -166,4 +195,4 @@ function printInfo() {
     ctx.fillText(infoArr[i], 10, 15 + i * 20);
 }
 
-update();
+runFrame();
